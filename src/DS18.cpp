@@ -41,6 +41,27 @@ bool DS18::read() {
   return read(_addr);
 }
 
+bool DS18::readFromBegining() { //Same as read, but resets the search at the begining to ensure you start over. Solves alternating failure in logging system
+
+  init();
+  _wire.reset_search(); //Reset the search so that it begins at the first address 
+  // Search for the next chip on the 1-Wire bus
+  if (!_wire.search(_addr)) {
+    _searchDone = true;
+    // _wire.reset_search();
+    return false;
+  }
+
+  // Check the CRC
+  if (OneWire::crc8(_addr, 7) != _addr[7]) {
+    _crcError = true;
+    return false;
+  }
+
+  // Read the temperature from that chip
+  return read(_addr);
+}
+
 bool DS18::read(uint8_t addr[8]) {
   // Save the chip ROM information for later
   memcpy(_addr, addr, sizeof(_addr));

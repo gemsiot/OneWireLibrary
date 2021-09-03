@@ -29,6 +29,8 @@ public:
 
   void setConversionTime(uint16_t ms);
 
+  bool readFromBegining(); 
+
 private:
   void init();
 
